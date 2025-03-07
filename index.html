@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBank: Account Opening Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet">
+    <style>
+        /* Animation for form sections */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo Animation (Smooth Zoom In & Out) */
+        @keyframes zoomInOut {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .logo-animation {
+            animation: zoomInOut 3s infinite ease-in-out;
+        }
+
+        /* Button Hover Effect */
+        .btn-primary {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Form Slide-In Effect */
+        .slide-in {
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideIn 0.1s ease-in-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Scrolling text animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            background-color: #ffffff; /* Light green background */
+            padding: 10px;
+            width: 100%;
+            position: relative;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            animation: marquee 25s linear infinite;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4 bg-orange-400">
+
+    <div class="card w-full max-w-2xl bg-white shadow-lg p-6 rounded-xl fade-in ">
+        <!-- Ubank Logo with Zoom Animation -->
+        <div class="flex justify-center">
+            <img src="./img/update logo.png" alt="Ubank Logo" class="w-32 h-32 logo-animation">
+        </div>
+
+        <h2 class="text-2xl font-bold text-center mb-4 text-gray-800 slide-in">Bank Account Opening Form</h2>
+
+        <!-- Scrolling Bank Info -->
+        <div class="marquee-container">
+            <span class="marquee-text">UBank is Bangladesh's most innovative and technologically advanced bank. UBank stands to give the most innovative and affordable banking products to Bangladesh.</span>
+        </div>
+
+        <form action="save_form.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+    
+            <!-- Step 1: Applicant Information -->
+            <fieldset class="space-y-4 fade-in slide-in">
+                <legend class="text-lg font-semibold text-gray-700">Step 1: Applicant Information</legend>
+
+               <!-- Branch Dropdown with Regions -->
+               <label class="block">
+                <span class="text-gray-700 dark:text-gray-300">Branch</span>
+                <select class="select select-bordered w-full">
+                    <option>Select Branch</option>
+
+                    <optgroup label="Dhaka Region">
+                        <option>Local Office</option>
+                        <option>Banani Branch</option>
+                        <option>Nababpur Branch</option>
+                        <option>Motijheel Foreign Exchange Branch</option>
+                        <option>Kawran Bazar Branch</option>
+                        <option>Shantinagar Branch</option>
+                        <option>Dhanmondi Branch</option>
+                        <option>Mohakhali Branch</option>
+                        <option>Mirpur Branch</option>
+                        <option>Gulshan Branch</option>
+                        <option>Uttara Branch</option>
+                        <option>Islampur Branch</option>
+                        <option>Dania Branch</option>
+                        <option>Dhaka EPZ Branch</option>
+                        <option>Elephant Road Branch</option>
+                        <option>Joypara Branch</option>
+                        <option>Nayabazar Branch</option>
+                        <option>Savar Bazar Branch</option>
+                        <option>Imamganj Branch</option>
+                        <option>Bashundhara Branch</option>
+                        <option>Shyamoli Branch</option>
+                        <option>Bandura Branch</option>
+                        <option>Mirpur Circle-10 Branch</option>
+                        <option>Satmosjid Road Branch</option>
+                        <option>Rampura Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Chittagong Region">
+                        <option>Agrabad Branch</option>
+                        <option>Patherhat Branch</option>
+                        <option>Hathazari Branch</option>
+                        <option>O.R. Nizam Road Branch</option>
+                        <option>Muradpur Branch</option>
+                        <option>Jubilee Road Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Sylhet Region">
+                        <option>Sylhet Branch</option>
+                        <option>Biswanath Branch</option>
+                        <option>Golapganj Branch</option>
+                        <option>Goala Bazar Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Khulna Region">
+                        <option>Khulna Branch</option>
+                        <option>Daulatpur Branch</option>
+                        <option>Boro Bazar Branch</option>
+                        <option>Bagerhat Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Rajshahi Region">
+                        <option>Rajshahi Branch</option>
+                        <option>Chapai Nawabganj Branch</option>
+                        <option>Joypurhat Branch</option>
+                        <option>Naogaon Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Barisal Region">
+                        <option>Barishal Branch</option>
+                        <option>Bhola Branch</option>
+                        <option>Jhalokati Branch</option>
+                        <option>Patuakhali Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Rangpur Region">
+                        <option>Rangpur Branch</option>
+                        <option>Dhap Branch</option>
+                        <option>Dinajpur Branch</option>
+                        <option>Gobindaganj Branch</option>
+                    </optgroup>
+
+                    <optgroup label="Mymensingh Region">
+                        <option>Mymensingh Branch</option>
+                        <option>Master Bari Branch</option>
+                        <option>Seed Store Bazar Branch</option>
+                        <option>Mymensingh Station Road Branch</option>
+                    </optgroup>
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-gray-700">Full Name</span>
+                <input type="text" class="input input-bordered w-full mt-1" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" required>
+            </label>
+            
+            <label class="block">
+                <span class="text-gray-700">Father’s/Husband’s Name</span>
+                <input type="text" class="input input-bordered w-full mt-1" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" required>
+            </label>
+            
+            <label class="block">
+                <span class="text-gray-700">Mother’s Name</span>
+                <input type="text" class="input input-bordered w-full mt-1" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" required>
+            </label>
+            
+
+            
+        
+            <!-- Date of Birth Section -->
+            <label class="block">
+                <span class="text-gray-700">Date of Birth</span>
+                <input type="date" class="input input-bordered w-full mt-1" value="2000-01-01">
+            </label>
+            
+
+            <button type="button" class="btn btn-primary w-full mt-4">Next</button>
+        </fieldset>
+
+            <!-- Step 2: Contact & Identification Details -->
+            <fieldset class="space-y-4 mt-8 fade-in slide-in">
+                <legend class="text-lg font-semibold text-gray-700">Step 2: Contact & Identification Details</legend>
+
+                <label class="block">
+                    <span class="text-gray-700">Mobile Number</span>
+                    <input type="tel" class="input input-bordered w-full mt-1" pattern="[0-9]{11}" maxlength="11" minlength="11" title="Enter exactly 11-digit mobile number" required>
+
+
+                </label>
+
+                <label class="block">
+                    <span class="text-gray-700">National ID/Passport Number</span>
+                    <input type="text" class="input input-bordered w-full mt-1" pattern="[A-Za-z][0-9]{8}" maxlength="9" minlength="9" title="Enter a valid Bangladeshi passport number (1 letter + 8 digits, e.g., A12345678)" required>
+
+
+                </label>
+
+                <button type="button" class="btn btn-primary w-full mt-4">Next</button>
+            </fieldset>
+
+            <!-- Step 3: Nominee Information -->
+            
+            <fieldset class="space-y-4 mt-8 fade-in slide-in">
+                <legend class="text-lg font-semibold text-gray-700">Step 3: Nominee Information</legend>
+
+                <label class="block">
+                    <span class="text-gray-700">Nominee’s Name</span>
+                    <input type="text" class="input input-bordered w-full mt-1" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" required>
+                </label>
+
+                <label class="block">
+                    <span class="text-gray-700">Relation with Account Holder</span>
+                    <input type="text" class="input input-bordered w-full mt-1" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed" required>
+                </label>
+
+                <label class="block">
+                    <span class="text-gray-700">Nominee’s Address</span>
+                    <textarea class="textarea textarea-bordered w-full mt-1"></textarea>
+                </label>
+
+            
+                <!-- Date of Birth Section -->
+                <label class="block">
+                    <span class="text-gray-700">Date of Birth</span>
+                    <input type="date" class="input input-bordered w-full mt-1" >
+                </label>
+                
+
+            <button type="button" class="btn btn-primary w-full mt-4">Next</button>    
+            
+        </fieldset>
+            <!-- Step 4: Declaration & Submission -->
+            <fieldset class="space-y-4 mt-8">
+                <legend class="text-lg font-semibold text-gray-700">Step 4: Declaration & Submission</legend>
+
+                <p class="text-gray-700">I hereby declare that the information provided above is true and correct. I agree to abide by the bank’s terms and conditions.</p>
+
+                <!-- File Upload for Applicant’s Signature -->
+                <label class="block">
+                    <span class="text-gray-700">Applicant’s Signature</span>
+                    <input type="file" accept=".png, .jpg, .jpeg, .pdf" class="file-input file-input-bordered w-full mt-1">
+                </label>
+
+                <button type="submit" class="btn btn-primary w-full mt-4">Submit</button>
+            </fieldset>
+
+        </form>
+    </div>
+
+</body>
+
+</html>
