@@ -1,125 +1,111 @@
 <?php
 session_start();
-include 'db_config.php';
+include 'db_config.php'; // Ensure database connection
 
-// Function to generate a random 10-digit account number
-function generateAccountNumber() {
-    return rand(1000000000, 9999999999); // 10-digit random number
+// Validate session data
+$required_fields = ['branch', 'full_name', 'father_or_husband_name', 'mother_name', 'date_of_birth', 'mobile_number', 'national_id_passport', 'nominee_name', 'nominee_relation', 'nominee_address', 'nominee_dob'];
+
+foreach ($required_fields as $field) {
+    if (empty($_SESSION[$field])) {
+        die("Error: Missing required field - " . ucfirst(str_replace("_", " ", $field)));
+    }
 }
 
-$account_number = generateAccountNumber();
+// Retrieve session data
+$branch = $_SESSION['branch'];
+$full_name = $_SESSION['full_name'];
+$father_or_husband_name = $_SESSION['father_or_husband_name'];
+$mother_name = $_SESSION['mother_name'];
+$date_of_birth = $_SESSION['date_of_birth'];
+$mobile_number = $_SESSION['mobile_number'];
+$national_id_passport = $_SESSION['national_id_passport'];
+$nominee_name = $_SESSION['nominee_name'];
+$nominee_relation = $_SESSION['nominee_relation'];
+$nominee_address = $_SESSION['nominee_address'];
+$nominee_dob = $_SESSION['nominee_dob'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $_SESSION['nominee_name'] = $_POST['nominee_name'] ?? '';
-    $_SESSION['nominee_relation'] = $_POST['nominee_relation'] ?? '';
-    $_SESSION['nominee_address'] = $_POST['nominee_address'] ?? '';
-    $_SESSION['nominee_dob'] = $_POST['nominee_dob'] ?? '';
+// Check if mobile number already exists
+$check_stmt = $conn->prepare("SELECT * FROM account_openings WHERE mobile_number = ?");
+$check_stmt->bind_param("s", $mobile_number);
+$check_stmt->execute();
+$result = $check_stmt->get_result();
 
-    // Ensure "uploads/" directory exists
-    $upload_dir = "uploads/";
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
-    }
-
-    // File Upload Handling
-    $target_file = $upload_dir . basename($_FILES["applicant_signature"]["name"]);
-    if (move_uploaded_file($_FILES["applicant_signature"]["tmp_name"], $target_file)) {
-        $file_upload_msg = "File uploaded successfully!";
-    } else {
-        die("File upload failed!<br>");
-    }
-
-    // Insert Data into Database
-    $stmt = $conn->prepare("INSERT INTO account_openings 
-        (branch, full_name, father_or_husband_name, mother_name, date_of_birth, mobile_number, national_id_passport, nominee_name, nominee_relation, nominee_address, nominee_dob, applicant_signature, account_number)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-    $stmt->bind_param("sssssssssssss",
-        $_SESSION['branch'],
-        $_SESSION['full_name'],
-        $_SESSION['father_or_husband_name'],
-        $_SESSION['mother_name'],
-        $_SESSION['date_of_birth'],
-        $_SESSION['mobile_number'],
-        $_SESSION['national_id_passport'],
-        $_SESSION['nominee_name'],
-        $_SESSION['nominee_relation'],
-        $_SESSION['nominee_address'],
-        $_SESSION['nominee_dob'],
-        $target_file,
-        $account_number
-    );
-
-    if ($stmt->execute()) {
-        $success_msg = "Account application submitted successfully!";
-        session_destroy();
-    } else {
-        die("Database Error: " . $stmt->error);
-    }
-
-    $stmt->close();
-    $conn->close();
+if ($result->num_rows > 0) {
+    die("Error: This mobile number is already registered!");
 }
+$check_stmt->close();
+
+// Generate random account number
+$account_number = 'UB' . rand(1000000000, 9999999999);
+
+// Handle file upload securely
+$upload_dir = "uploads/";
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
+}
+
+if (isset($_FILES["applicant_signature"]) && $_FILES["applicant_signature"]["error"] === 0) {
+    $file_name = basename($_FILES["applicant_signature"]["name"]);
+    $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    $allowed_types = ['jpg', 'jpeg', 'png', 'pdf'];
+
+    if (!in_array($file_type, $allowed_types)) {
+        die("Error: Only JPG, JPEG, PNG, and PDF files are allowed.");
+    }
+
+    $target_file = $upload_dir . uniqid() . "." . $file_type; // Unique filename
+    if (!move_uploaded_file($_FILES["applicant_signature"]["tmp_name"], $target_file)) {
+        die("Error: File upload failed.");
+    }
+} else {
+    die("Error: No signature file uploaded.");
+}
+
+// Insert into database
+$stmt = $conn->prepare("INSERT INTO account_openings 
+    (branch, full_name, father_or_husband_name, mother_name, date_of_birth, mobile_number, national_id_passport, nominee_name, nominee_relation, nominee_address, nominee_dob, account_number, applicant_signature) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+$stmt->bind_param("sssssssssssss", $branch, $full_name, $father_or_husband_name, $mother_name, $date_of_birth, $mobile_number, $national_id_passport, $nominee_name, $nominee_relation, $nominee_address, $nominee_dob, $account_number, $target_file);
+
+if ($stmt->execute()) {
+    echo "<div id='success-message' class='success-box'>
+            ✅ Account application submitted successfully!<br>
+            🎉 Your Account Number: <span class='account-number'>$account_number</span>
+          </div>";
+
+    echo "<style>
+            .success-box {
+                text-align: center;
+                font-size: 22px;
+                color: green;
+                font-weight: bold;
+                padding: 20px;
+                border: 2px solid green;
+                background-color: #e8ffe8;
+                border-radius: 10px;
+                width: 50%;
+                margin: 50px auto;
+                animation: fadeIn 1s ease-in-out, fadeOut 3s ease-in-out 5s forwards;
+            }
+            .account-number {
+                color: blue;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; display: none; }
+            }
+          </style>";
+} else {
+    echo "Error: " . $stmt->error;
+}
+
+$stmt->close();
+$conn->close();
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submission Successful</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Fade-in Animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .fade-in {
-            animation: fadeIn 1s ease-in-out forwards;
-        }
-
-        /* Auto Redirect */
-        .redirect {
-            opacity: 0;
-            animation: fadeIn 2s ease-in-out forwards;
-        }
-    </style>
-    <script>
-        // Redirect after 5 seconds
-        setTimeout(function() {
-            window.location.href = "index.php";
-        }, 5000);
-    </script>
-</head>
-<body class="bg-green-100 flex justify-center items-center min-h-screen p-4">
-
-    <div class="w-full max-w-lg bg-white shadow-lg p-8 rounded-xl text-center fade-in">
-        <h2 class="text-3xl font-bold text-green-600 mb-4">🎉 Success!</h2>
-        <p class="text-gray-700 text-lg"><?= $file_upload_msg ?? '' ?></p>
-        <p class="text-gray-800 text-lg font-semibold mt-2"><?= $success_msg ?? '' ?></p>
-        
-        <!-- Account Number Display -->
-        <p class="text-gray-900 text-xl font-bold mt-4">Your Account Number:</p>
-        <p class="text-2xl font-semibold text-blue-600"><?= $account_number ?></p>
-
-        <p class="text-gray-600 mt-4 redirect">Redirecting to home in <span id="countdown">5</span> seconds...</p>
-    </div>
-
-    <script>
-        // Countdown Timer
-        let count = 5;
-        setInterval(() => {
-            count--;
-            document.getElementById("countdown").innerText = count;
-        }, 1000);
-    </script>
-
-</body>
-</html>
